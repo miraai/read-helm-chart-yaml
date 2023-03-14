@@ -1,0 +1,23 @@
+name: Integration Test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+      - name: Self test
+        id: selftest
+        uses: miraai/read-helm-chart-yaml@v0.1
+        with:
+          path: tests/example
+
+      - name: Check outputs
+        run: |
+          test "${{ steps.selftest.outputs.name }}" == "example"
+          test "${{ steps.selftest.outputs.apiVersion }}" == "v2"
+          test "${{ steps.selftest.outputs.version }}" == "0.1.0"
+          test "${{ steps.selftest.outputs.icon }}" == ""
+          test "${{ steps.selftest.outputs.dependencies_example-dep_version }}" == "0.2.0"
